@@ -1,0 +1,25 @@
+SongbirdDbTools 
+Copyright 2013 Johannes Schnatterer
+
+This product depends on the following libraries.
+
+Logging facade provided by SLF4j (published under  MIT license)
+http://slf4j.org/
+
+Logging implemented by Log4j (published under The Apache Software License, Version 2.0)
+http://logging.apache.org/log4j/
+
+SQLite JDBC driver by Xerial (published under The Apache Software License, Version 2.0)
+http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC/
+
+Command Line Interface by JCommander (published under The Apache Software License, Version 2.0)
+http://jcommander.org/
+
+I/O Utilities by Apache Commons (published under The Apache Software License, Version 2.0)
+http://commons.apache.org/io/
+
+Playlist creation by Lizzy (published under a BSD-like license)
+http://lizzy.sourceforge.net/
+
+Unit testing by JUnit (published Common Public License - v 1.0)
+https://github.com/KentBeck/junit
