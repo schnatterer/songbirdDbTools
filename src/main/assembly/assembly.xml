@@ -1,0 +1,44 @@
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>lib</outputDirectory>
+			<unpack>false</unpack>
+		</dependencySet>
+	</dependencySets>
+
+	<fileSets>
+		<!-- Text files -->
+		<fileSet>
+			<directory>${project.basedir}</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>README*</include>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+			</includes>
+		</fileSet>
+		<!-- Project artifact -->
+		<fileSet>
+			<directory>${project.build.directory}</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+		<!-- Start scripts -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/resources/</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>*.bat</include>
+				<include>*.sh</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>
