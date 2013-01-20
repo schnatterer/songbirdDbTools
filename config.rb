@@ -2,10 +2,10 @@
 project_type = :stand_alone
 
 # Publishing paths
-http_path = "/"
-http_images_path = "/images"
-http_fonts_path = "/fonts"
-css_dir = "public/stylesheets"
+http_path = "/songbirdDbTools/"
+http_images_path = "/songbirdDbTools/images"
+http_fonts_path = "/songbirdDbTools/fonts"
+css_dir = "public/songbirdDbTools/stylesheets"
 
 # Local development paths
 sass_dir = "sass"
