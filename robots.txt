@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://schnatterer.github.com/songbirdDbTools/sitemap.xml 

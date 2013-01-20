@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[songbirdDbTools]]></title>
+  <link href="http://schnatterer.github.com/songbirdDbTools/atom.xml" rel="self"/>
+  <link href="http://schnatterer.github.com/songbirdDbTools/"/>
+  <updated>2013-01-20T19:32:20+01:00</updated>
+  <id>http://schnatterer.github.com/songbirdDbTools/</id>
+  <author>
+    <name><![CDATA[schnatterer]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Proudly presenting songbirdDbTools 0.1]]></title>
+    <link href="http://schnatterer.github.com/songbirdDbTools/blog/2013/01/20/proudly-presenting-songbirddbtools-0-dot-1/"/>
+    <updated>2013-01-20T18:42:00+01:00</updated>
+    <id>http://schnatterer.github.com/songbirdDbTools/blog/2013/01/20/proudly-presenting-songbirddbtools-0-dot-1</id>
+    <content type="html"><![CDATA[<p>Are you frustrated that you aren&#8217;t able to export your playlist from your songbird database anymore because addons like <a href="http://addons.songbirdnest.com/addon/51">Playlist Export Tool</a> and <a href="http://addons.songbirdnest.com/addon/1892">Export My Playlists</a> unfortunately never were updated to work with the most recent songbird version?</p>
+
+<p>Then songbirdDbTools might be the solution to your problem. As it&#8217;s not a Songbird Addon, it keeps working even when you update songbird. And it exports playlists!</p>
+
+<p>It might even have more features in the future.</p>
+
+<p>As this is the very first release, please be patient - performance was not the main issue to resolve with v.0.1&#8230;</p>
+
+<p>Still interested?
+Download version 0.1 of songbirdDbTools from <a href="http://songbirddbtools.schnatterer.info/release/songbirdDbTools-0.1-bin.zip">here</a>
+You can find a general introduction on how to use songbirdDbTools in the <a href="https://github.com/schnatterer/songbirdDbTools/wiki/Introduction" title="">wiki</a>.</p>
+
+<p>Found a bug? File it <a href="https://github.com/schnatterer/songbirdDbTools/issues">here</a></p>
+
+<p>Wanna contribute? <a href="https://github.com/schnatterer/songbirdDbTools">Fork on github</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>
