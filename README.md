@@ -8,4 +8,4 @@ Get the newest release from [here] (http://songbirddbtools.schnatterer.info/rele
 
 Read the [wiki](./wiki) to find out how to use songbirdDbTools.
 
-Subscribe to the [blog] (https://schnatterer.github.com/songbirddbtools) in order to stay up to date.
+Subscribe to the [blog] (http://schnatterer.github.com/songbirdDbTools/) in order to stay up to date.
