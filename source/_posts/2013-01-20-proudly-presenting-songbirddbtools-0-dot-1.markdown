@@ -7,6 +7,7 @@ categories:
 - release
 - v0.1
 author: schnatterer
+comments: true
 ---
 Are you frustrated that you aren't able to export your playlist from your songbird database anymore because addons like [Playlist Export Tool](http://addons.songbirdnest.com/addon/51) and [Export My Playlists](http://addons.songbirdnest.com/addon/1892) unfortunately never were updated to work with the most recent songbird version?
 
