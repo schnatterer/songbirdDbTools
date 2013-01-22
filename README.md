@@ -6,6 +6,6 @@ songbirdDbTools is a Java-based tool that can access SQLite files that are creat
 
 Get the newest release from [here] (http://songbirddbtools.schnatterer.info/release/current).
 
-Read the [wiki](./songbirdDbTools/wiki) to find out how to use songbirdDbTools.
+Read the [wiki](/wiki) to find out how to use songbirdDbTools.
 
 Subscribe to the [blog] (http://schnatterer.github.com/songbirdDbTools/) in order to stay up to date.
