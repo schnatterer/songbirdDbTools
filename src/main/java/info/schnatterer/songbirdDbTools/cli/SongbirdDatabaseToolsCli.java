@@ -47,7 +47,7 @@ public class SongbirdDatabaseToolsCli extends ComplexCli {
 	@Parameters(commandDescription = DESC_COMMAND_EXPORT)
 	public class ExportPlaylists {
 		/** Description for parameter - playlist format. */
-		private static final String DESC_FORMAT = "Playlist format";
+		private static final String DESC_FORMAT = "Playlist format.";
 		/** Description for parameter - main parameter (destination folder). */
 		private static final String DESC_MAIN = "[destination folder to export playlists]";
 		/** Description for parameter - use relative paths? */
@@ -55,9 +55,10 @@ public class SongbirdDatabaseToolsCli extends ComplexCli {
 				"Try to use paths relative to the playlist directory for members. ";
 		/** Description for parameter - skip export dynamic playlists? */
 		private static final String DESC_DYNAMIC_LISTS =
-				"Skip songbird's dynamic playlists (e.g. recently added, highest rated)";
+				"Skip songbird's dynamic playlists (e.g. recently added, highest rated.)";
 		/** Description for parameter playlist names. */
-		private static final String DESC_PLAYLISTS = "Names of the playlists that should be exported";
+		private static final String DESC_PLAYLISTS =
+				"Names of the playlists that should be exported. If not specified, all playlist are exported.";
 
 		/** Definition of parameter - main parameter (destination folder). */
 		@Parameter(description = DESC_MAIN, required = true)
