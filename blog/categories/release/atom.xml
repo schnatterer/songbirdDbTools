@@ -4,7 +4,7 @@
   <title><![CDATA[Category: release | songbirdDbTools]]></title>
   <link href="http://schnatterer.github.com/songbirdDbTools/blog/categories/release/atom.xml" rel="self"/>
   <link href="http://schnatterer.github.com/songbirdDbTools/"/>
-  <updated>2013-01-22T22:10:38+01:00</updated>
+  <updated>2013-02-12T20:33:56+01:00</updated>
   <id>http://schnatterer.github.com/songbirdDbTools/</id>
   <author>
     <name><![CDATA[schnatterer]]></name>
@@ -12,6 +12,19 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[songbirdDbTools 0.1.1 released]]></title>
+    <link href="http://schnatterer.github.com/songbirdDbTools/blog/2013/02/12/songbirddbtools-0-dot-1-1-released/"/>
+    <updated>2013-02-12T19:50:00+01:00</updated>
+    <id>http://schnatterer.github.com/songbirdDbTools/blog/2013/02/12/songbirddbtools-0-dot-1-1-released</id>
+    <content type="html"><![CDATA[<p>New feature: Command ExportPlaylist - Export specific playlist using new parameter <em>-p</em>.</p>
+
+<p>See <a href="https://github.com/schnatterer/songbirdDbTools/wiki/Command:-Export-Playlists">wiki</a> for more details.</p>
+
+<p>Download version 0.1.1 of songbirdDbTools from <a href="http://songbirddbtools.schnatterer.info/release/songbirdDbTools-0.1.1-bin.zip">here</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Proudly presenting songbirdDbTools 0.1]]></title>
