@@ -90,7 +90,7 @@ public class SongbirdDatabaseTools {
 			if (commandParams instanceof ExportPlaylists) {
 				ExportPlaylists params = (ExportPlaylists) commandParams;
 				ExportPlaylistsCommand.exportPlaylists(params.getDestinationPath(), params.getFormat(),
-						params.isRelativePaths(), params.isSkipDynamicPlaylists());
+						params.getPlaylists(), params.isRelativePaths(), params.isSkipDynamicPlaylists());
 			}
 			// else if (cliParams instanceof SongbirdDatabaseToolsCli.??) {
 			return true;

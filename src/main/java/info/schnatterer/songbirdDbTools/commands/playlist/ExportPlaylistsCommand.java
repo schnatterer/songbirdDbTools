@@ -1,20 +1,20 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirdDbTools.commands.playlist;
 
@@ -30,8 +30,10 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.FileSystemException;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -70,7 +72,7 @@ public final class ExportPlaylistsCommand {
 		try {
 			logger.info("startup");
 			SongbirdDatabaseConnection.setDbFile(args[0]);
-			ExportPlaylistsCommand.exportPlaylists("etc/", "m3u", true, false);
+			ExportPlaylistsCommand.exportPlaylists("etc/", "m3u", null, true, false);
 		} finally {
 			SongbirdDatabaseConnection.close();
 			logger.info("shutdown");
@@ -84,13 +86,15 @@ public final class ExportPlaylistsCommand {
 	 *            the folder to write the playlist to
 	 * @param playlistFormat
 	 *            desired format for the playlist (e.g. "m3u" or "pls") if
+	 * @param playlistNames
+	 *            the names of the playlists to be exported. If <code>null</code> or empty, all playlists are exported.
 	 * @param useRelativePaths
 	 *            <code>true</code> tries to create relative paths from the playlist members to the playlist file
 	 * @param skipDynamicLists
 	 *            <code>true</code> skips dynamic playlists
 	 */
 	public static void exportPlaylists(final String destinationFolder, final String playlistFormat,
-			final boolean useRelativePaths, final boolean skipDynamicLists) {
+			final List<String> playlistNames, final boolean useRelativePaths, final boolean skipDynamicLists) {
 
 		// Check if playlist can be written to destination folder.
 		try {
@@ -99,6 +103,14 @@ public final class ExportPlaylistsCommand {
 			logger.warn("Error writing playlist: " + e.getMessage());
 			return;
 		}
+
+		Set<String> playlistNamesSet = null;
+		if (playlistNames != null && !playlistNames.isEmpty()) {
+			playlistNamesSet = new HashSet<String>();
+			playlistNamesSet.addAll(playlistNames);
+		}
+
+		Set<String> exportedLists = new HashSet<String>();
 
 		try {
 			List<SimpleMediaList> playlists = new PlaylistService().getPlayLists(true, skipDynamicLists);
@@ -123,16 +135,22 @@ public final class ExportPlaylistsCommand {
 				String playlistName = simpleMediaList.getList().getProperty(Property.PROP_MEDIA_LIST_NAME);
 				if (playlistName == null) {
 					logger.warn("Found playlist with no name. Skipping list. " + simpleMediaList);
-					return;
+					continue;
 				}
 				if (playlistName.startsWith("&smart.defaultlist.")) {
 					playlistName = playlistName.substring("&smart.defaultlist.".length());
 				}
-
+				if (playlistNamesSet != null && !playlistNamesSet.contains(playlistName)) {
+					// Don't export playlist
+					logger.debug("Skipping playlist \"" + playlistName + "\"");
+					continue;
+				}
+				exportedLists.add(playlistName);
 				try {
-					List<String> omittedFiles = playlistExporter.export(playlistNameToFileName(playlistName),
-							getMemberPaths(simpleMediaList), destinationFolder, playlistFormat, useRelativePaths,
-							skipDynamicLists);
+					List<String> omittedFiles =
+							playlistExporter.export(playlistNameToFileName(playlistName),
+									getMemberPaths(simpleMediaList), destinationFolder, playlistFormat,
+									useRelativePaths, skipDynamicLists);
 					String output = "Finished writing playlist " + playlistName;
 					if (omittedFiles != null && omittedFiles.size() > 0) {
 						output += ". The following files were omitted because they did not exist: " + EOL;
@@ -158,6 +176,13 @@ public final class ExportPlaylistsCommand {
 				// e);
 				// }
 			}
+			if (playlistNamesSet != null && !playlistNamesSet.isEmpty()) {
+				playlistNamesSet.removeAll(exportedLists);
+				if (!playlistNamesSet.isEmpty()) {
+					logger.warn("The following playlist were not found in songbird database: "
+							+ playlistNamesSet.toString());
+				}
+			}
 		} catch (SQLException e) {
 			/*
 			 * if the error message is "out of memory", it probably means no database file is found
@@ -180,7 +205,7 @@ public final class ExportPlaylistsCommand {
 			throw new FileSystemException("Destination folder does not exist: " + destinationFile.getAbsolutePath());
 		}
 		if (!destinationFile.isDirectory()) {
-			throw new FileSystemException("Destination folder is not a directory: " 
+			throw new FileSystemException("Destination folder is not a directory: "
 					+ destinationFile.getAbsolutePath());
 		}
 		if (!destinationFile.canWrite()) {

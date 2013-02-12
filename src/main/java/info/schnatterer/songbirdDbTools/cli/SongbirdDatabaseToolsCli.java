@@ -1,23 +1,24 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirdDbTools.cli;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.beust.jcommander.Parameter;
@@ -50,11 +51,13 @@ public class SongbirdDatabaseToolsCli extends ComplexCli {
 		/** Description for parameter - main parameter (destination folder). */
 		private static final String DESC_MAIN = "[destination folder to export playlists]";
 		/** Description for parameter - use relative paths? */
-		private static final String DESC_RELATIVE_PATHS = 
+		private static final String DESC_RELATIVE_PATHS =
 				"Try to use paths relative to the playlist directory for members. ";
 		/** Description for parameter - skip export dynamic playlists? */
-		private static final String DESC_DYNAMIC_LISTS = 
+		private static final String DESC_DYNAMIC_LISTS =
 				"Skip songbird's dynamic playlists (e.g. recently added, highest rated)";
+		/** Description for parameter playlist names. */
+		private static final String DESC_PLAYLISTS = "Names of the playlists that should be exported";
 
 		/** Definition of parameter - main parameter (destination folder). */
 		@Parameter(description = DESC_MAIN, required = true)
@@ -63,6 +66,11 @@ public class SongbirdDatabaseToolsCli extends ComplexCli {
 		/** Definition of parameter - playlist format. */
 		@Parameter(names = { "-f", "--format" }, description = DESC_FORMAT)
 		private String format = "m3u";
+
+		/** Definition of parameter - playlist names. */
+		@Parameter(names = { "-p", "--playlists" }, variableArity = true, splitter = NoSplitter.class,
+				description = DESC_PLAYLISTS)
+		private List<String> playlistNames = new LinkedList<>();
 
 		/** Definition of parameter - use relative paths? */
 		@Parameter(names = { "-r", "--relative" }, description = DESC_RELATIVE_PATHS)
@@ -92,6 +100,13 @@ public class SongbirdDatabaseToolsCli extends ComplexCli {
 		 */
 		public boolean isSkipDynamicPlaylists() {
 			return skipDynamicPlaylists;
+		}
+
+		/**
+		 * @return the playlist names that should be exported.
+		 */
+		public List<String> getPlaylists() {
+			return playlistNames;
 		}
 	}
 
