@@ -1,20 +1,20 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirdDbTools.commands.playlist;
 
@@ -60,8 +60,9 @@ public class PlaylistExporterImplLizzy implements PlaylistExporter {
 		try {
 			// Create destination directory if it does not exist
 			new File(destinationFolder).mkdirs();
-			final File outputFile = new File(destinationFolder + File.separator + playlistName + "." + playlistFormat)
-					.getCanonicalFile();
+			final File outputFile =
+					new File(destinationFolder + File.separator + playlistName + "." + playlistFormat)
+							.getCanonicalFile();
 
 			Playlist playlist = new Playlist();
 
@@ -85,7 +86,7 @@ public class PlaylistExporterImplLizzy implements PlaylistExporter {
 					}
 				} catch (Throwable e) {
 					throw new PlaylistExporterException(playlistName + ": Unable to add path to playlist: "
-							+ member.getAbsolutePath() + ": \"" + e.getMessage() + "\". Omitting file...");
+							+ member.getAbsolutePath() + ": \"" + e.getMessage() + "\". Omitting file...", e);
 				}
 			}
 
@@ -93,8 +94,8 @@ public class PlaylistExporterImplLizzy implements PlaylistExporter {
 			OutputStream out = null;
 			try {
 				out = new FileOutputStream(outputFile);
-				SpecificPlaylistProvider provider = SpecificPlaylistFactory.getInstance().findProviderById(
-						playlistFormat);
+				SpecificPlaylistProvider provider =
+						SpecificPlaylistFactory.getInstance().findProviderById(playlistFormat);
 
 				SpecificPlaylist newSpecificPlaylist = provider.toSpecificPlaylist(playlist);
 				newSpecificPlaylist.writeTo(out, null);
@@ -104,9 +105,9 @@ public class PlaylistExporterImplLizzy implements PlaylistExporter {
 				}
 			}
 		} catch (Throwable e) {
-			throw new PlaylistExporterException("Unable to create playlist file from destination folder \""
+			throw new PlaylistExporterException("Unable to create playlist file in destination folder \""
 					+ destinationFolder + "\", playlist name \"" + playlistName + "\" and format \"" + playlistFormat
-					+ "\".", e);
+					+ "\": " + e.getMessage(), e);
 		}
 		return omittedFiles;
 	}
