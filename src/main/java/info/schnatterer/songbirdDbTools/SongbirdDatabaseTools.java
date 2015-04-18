@@ -49,12 +49,12 @@ public class SongbirdDatabaseTools {
 		try {
 			if (!songbirdDatabaseTools.evaluateParams(args)) {
 				// Parameters not correct
-				System.exit(-1);
+				System.exit(-1); // NOSONAR: This is where the application ends in case of error
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			// Failure
 			songbirdDatabaseTools.logger.error(e.getMessage(), e);
-			System.exit(-1);
+			System.exit(-1); // //NOSONAR: This is where the application ends in case of error
 		}
 	}
 
@@ -76,7 +76,7 @@ public class SongbirdDatabaseTools {
 
 		try {
 			commandParams = applicationParams.readParams(args, "songbirdDbTools");
-		} catch (ParameterException e) {
+		} catch (ParameterException e) { // NOSONAR: Exception already logged
 			return false;
 		}
 

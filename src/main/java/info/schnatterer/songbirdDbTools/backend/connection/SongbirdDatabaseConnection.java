@@ -1,20 +1,20 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirdDbTools.backend.connection;
 
@@ -29,10 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
 /**
- * Abstracts from the Songbird database database file. This is a static class
- * used by the database services abstracting from the tables. Make sure to call
- * {@link #setDbFile(String)} before using it and {@link #close()} after using
- * it.
+ * Abstracts from the Songbird database database file. This is a static class used by the database services abstracting
+ * from the tables. Make sure to call {@link #setDbFile(String)} before using it and {@link #close()} after using it.
  * 
  * @author schnatterer
  * 
@@ -43,8 +41,7 @@ public final class SongbirdDatabaseConnection {
 	}
 
 	/** SLF4J-Logger. */
-	private static Logger logger = LoggerFactory
-			.getLogger(SongbirdDatabaseConnection.class);
+	private static Logger logger = LoggerFactory.getLogger(SongbirdDatabaseConnection.class);
 
 	/** The jdbc prefix used for connecting. */
 	private static final String JDBC_PREFIX = "jdbc:sqlite:";
@@ -64,26 +61,31 @@ public final class SongbirdDatabaseConnection {
 	/** Closes the database connection. */
 	public static void close() {
 		try {
-			if (connection != null) {
-				logger.debug("Closing connection to " + dbUrl);
-				connection.close();
-			}
-		} catch (SQLException e) {
-			// connection close failed.
-			logger.error(e.getMessage(), e);
+			close(connection);
 		} finally {
 			connection = null;
 		}
 	}
 
+	/** Closes the database connection. */
+	public static void close(Connection actualConnection) {
+		try {
+			if (actualConnection != null) {
+				logger.debug("Closing connection to " + dbUrl);
+				actualConnection.close();
+			}
+		} catch (SQLException e) {
+			// connection close failed.
+			logger.error(e.getMessage(), e);
+		}
+	}
+
 	/**
-	 * Returns a connection to the songbird database set up by
-	 * {@link #setDbFile(String)}.
+	 * Returns a connection to the songbird database set up by {@link #setDbFile(String)}.
 	 * 
 	 * @return a connection ready for queries to the songbird database
 	 * @throws SQLException
-	 *             in case of any problems (e.g. SQLite-related or missing
-	 *             database URL)
+	 *             in case of any problems (e.g. SQLite-related or missing database URL)
 	 */
 	private static Connection getConnection() throws SQLException {
 		if (connection == null) {
@@ -99,8 +101,7 @@ public final class SongbirdDatabaseConnection {
 				// Class.forName("org.sqlite.Driver");
 
 			} catch (ClassNotFoundException e) {
-				throw new SQLException("SQLlite driver not found on classpath",
-						e);
+				throw new SQLException("SQLlite driver not found on classpath", e);
 			}
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true);
@@ -134,53 +135,49 @@ public final class SongbirdDatabaseConnection {
 	 * 
 	 * @return a new statement object.
 	 * @throws SQLException
-	 *             if a database access error occurs or this method is called on
-	 *             a closed connection
+	 *             if a database access error occurs or this method is called on a closed connection
 	 */
 	private static Statement getStatment() throws SQLException {
-		Statement statement = getConnection().createStatement();
-		statement.setQueryTimeout(STATEMENT_TIMEOUT);
-		return statement;
+		Connection actualConnection = getConnection();
+		Statement statement;
+		try {
+			statement = actualConnection.createStatement();
+			statement.setQueryTimeout(STATEMENT_TIMEOUT);
+			return statement;
+		} finally {
+			close(actualConnection);
+		}
 	}
 
 	/**
 	 * Executes an SQL query as a new Statement.
 	 * 
 	 * @param query
-	 *            an SQL statement to be sent to the database, typically a
-	 *            static SQL SELECT statement
+	 *            an SQL statement to be sent to the database, typically a static SQL SELECT statement
 	 * 
-	 * @return a ResultSet object that contains the data produced by the given
-	 *         query; never null
+	 * @return a ResultSet object that contains the data produced by the given query; never null
 	 * @throws SQLException
-	 *             if a database access error occurs, this method is called on a
-	 *             closed Statement, the given SQL statement produces anything
-	 *             other than a single ResultSet object, the method is called on
-	 *             a PreparedStatement or CallableStatement
+	 *             if a database access error occurs, this method is called on a closed Statement, the given SQL
+	 *             statement produces anything other than a single ResultSet object, the method is called on a
+	 *             PreparedStatement or CallableStatement
 	 */
-	public static ResultSet executeQuery(final String query)
-			throws SQLException {
+	public static ResultSet executeQuery(final String query) throws SQLException {
 		// logger.debug("Query to SQLite: " + query);
 		return getStatment().executeQuery(query);
 	}
 
 	/**
-	 * Creates a PreparedStatement object for sending parameterized SQL
-	 * statements to the database.
+	 * Creates a PreparedStatement object for sending parameterized SQL statements to the database.
 	 * 
 	 * @param query
-	 *            an SQL statement that may contain one or more '?' IN parameter
-	 *            placeholders
+	 *            an SQL statement that may contain one or more '?' IN parameter placeholders
 	 * 
-	 * @return new default PreparedStatement object containing the pre-compiled
-	 *         SQL statement
+	 * @return new default PreparedStatement object containing the pre-compiled SQL statement
 	 * 
 	 * @throws SQLException
-	 *             if a database access error occurs or this method is called on
-	 *             a closed connection
+	 *             if a database access error occurs or this method is called on a closed connection
 	 */
-	public static PreparedStatement preparedStatement(final String query)
-			throws SQLException {
+	public static PreparedStatement preparedStatement(final String query) throws SQLException {
 		return getConnection().prepareStatement(query);
 	}
 
@@ -192,15 +189,14 @@ public final class SongbirdDatabaseConnection {
 	}
 
 	/**
-	 * Sets the path to the SQLite database. Causes the actual connection to be
-	 * closed (if any).
+	 * Sets the path to the SQLite database. Causes the actual connection to be closed (if any).
 	 * 
 	 * @param pathToDb
 	 *            the dbUrl to set
 	 */
 	public static void setDbFile(final String pathToDb) {
 		if (connection != null) {
-			close();
+			close(connection);
 		}
 		SongbirdDatabaseConnection.dbUrl = JDBC_PREFIX + pathToDb;
 	}

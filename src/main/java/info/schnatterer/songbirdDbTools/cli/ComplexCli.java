@@ -77,7 +77,7 @@ public abstract class ComplexCli {
 		Map<String, Object> commandString2Instance = createCommands();
 		try {
 			commander.parse(argv);
-		} catch (ParameterException e) {
+		} catch (ParameterException e) { // NOSONAR: Method call preserves exception!
 			printErrorThrowException(e);
 		}
 
@@ -126,10 +126,11 @@ public abstract class ComplexCli {
 					/*
 					 * Create an instance of the inner class relating to this instance of the outer class
 					 */
-					command = innerClass.getDeclaredConstructor(new Class[] { this.getClass() }).newInstance(
-							new Object[] { this });
+					command =
+							innerClass.getDeclaredConstructor(new Class[] { this.getClass() }).newInstance(
+									new Object[] { this });
 
-				} catch (Throwable e) {
+				} catch (Exception e) { // NOSONAR: Method call preserves exception!
 					printErrorThrowException(e);
 				}
 				String commandStr = innerClass.getSimpleName();

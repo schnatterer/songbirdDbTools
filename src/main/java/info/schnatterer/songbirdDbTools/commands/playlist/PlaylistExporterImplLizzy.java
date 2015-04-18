@@ -84,7 +84,7 @@ public class PlaylistExporterImplLizzy implements PlaylistExporter {
 						// + ". Omitting file...");
 						omittedFiles.add(member.getAbsolutePath());
 					}
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					throw new PlaylistExporterException(playlistName + ": Unable to add path to playlist: "
 							+ member.getAbsolutePath() + ": \"" + e.getMessage() + "\". Omitting file...", e);
 				}
@@ -104,7 +104,7 @@ public class PlaylistExporterImplLizzy implements PlaylistExporter {
 					out.close();
 				}
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			throw new PlaylistExporterException("Unable to create playlist file in destination folder \""
 					+ destinationFolder + "\", playlist name \"" + playlistName + "\" and format \"" + playlistFormat
 					+ "\": " + e.getMessage(), e);

@@ -1,20 +1,20 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirdDbTools.backend.service;
 
@@ -176,7 +176,7 @@ public class PlaylistService {
 
 				if (skipDynamicLists) {
 					/* Note: Dynamic lists begin with "&smart". */
-					if (mediaListName != null && mediaListName.startsWith("&smart")) {
+					if (mediaListName.startsWith("&smart")) {
 						// Skip this one
 						continue;
 					}
@@ -312,7 +312,7 @@ public class PlaylistService {
 	 * @throws SQLException
 	 *             database-related exceptions
 	 */
-	private int getProperties(final MediaItem mediaItem, final ResultSet rs, final String idColumn) 
+	private int getProperties(final MediaItem mediaItem, final ResultSet rs, final String idColumn)
 			throws SQLException {
 		boolean moreData = false;
 		int currentId = mediaItem.getId();

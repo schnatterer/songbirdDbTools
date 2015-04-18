@@ -100,7 +100,7 @@ public final class ExportPlaylistsCommand {
 		try {
 			checkDirectory(destinationFolder);
 		} catch (Exception e) {
-			logger.warn("Error writing playlist: " + e.getMessage());
+			logger.warn("Error writing playlist: " + e.getMessage(), e);
 			return;
 		}
 
@@ -158,7 +158,7 @@ public final class ExportPlaylistsCommand {
 					}
 					logger.info(output);
 				} catch (PlaylistExporterException e) {
-					logger.warn("Error creating playlist: " + e.getMessage());
+					logger.warn("Error creating playlist: " + e.getMessage(), e);
 				}
 				// } catch (IOException e) {
 				// logger.error("Unable to write playlist file", e);
@@ -252,10 +252,10 @@ public final class ExportPlaylistsCommand {
 				 */
 				file = file.getCanonicalFile();
 				memberFiles.add(file.getAbsolutePath());
-			} catch (Throwable t) {
+			} catch (Exception e) {
 				logger.warn(simpleMediaList.getList().getProperty(Property.PROP_MEDIA_LIST_NAME)
-						+ ": Unable to add path to playlist: " + m.getContentUrl() + ": \"" + t.getMessage()
-						+ "\". Omitting file...");
+						+ ": Unable to add path to playlist: " + m.getContentUrl() + ": \"" + e.getMessage()
+						+ "\". Omitting file...", e);
 				// So we use the absolute path instead...
 			}
 		}

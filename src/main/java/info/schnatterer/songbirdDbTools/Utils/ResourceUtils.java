@@ -1,20 +1,20 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirdDbTools.Utils;
 
@@ -35,21 +35,18 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * An array contains the most important characters that are not allowed in
-	 * file names.
+	 * An array contains the most important characters that are not allowed in file names.
 	 */
-	public static final char[] ILLEGAL_FILE_NAME_CHARS = { '/', '\n', '\r',
-			'\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
+	public static final char[] ILLEGAL_FILE_NAME_CHARS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\',
+			'<', '>', '|', '\"', ':' };
 	/**
-	 * The hard-coded default-value which is used to replace illegal characters
-	 * in file names.
+	 * The hard-coded default-value which is used to replace illegal characters in file names.
 	 */
 	public static final char DEFAULT_REPLACEMENT_CHAR = '-';
 
 	/**
-	 * Convenience method for
-	 * {@link ResourceUtils#getRelativePath(String, String, String)}, using
-	 * {@link File} parameters.
+	 * Convenience method for {@link ResourceUtils#getRelativePath(String, String, String)}, using {@link File}
+	 * parameters.
 	 * 
 	 * @param base
 	 *            basePath is calculated from this file
@@ -59,15 +56,12 @@ public final class ResourceUtils {
 	 */
 	public static String getRelativePath(final File base, final File path) {
 		// return base.toURI().relativize(path.toURI()).getPath();
-		return getRelativePath(base.getAbsolutePath(), path.getAbsolutePath(),
-				File.separator);
+		return getRelativePath(base.getAbsolutePath(), path.getAbsolutePath(), File.separator);
 	}
 
 	/**
-	 * Convenience method for
-	 * {@link ResourceUtils#getRelativePath(String, String, String)}, which uses
-	 * the system-dependent default file separator
-	 * {@link java.io.File#separator}.
+	 * Convenience method for {@link ResourceUtils#getRelativePath(String, String, String)}, which uses the
+	 * system-dependent default file separator {@link java.io.File#separator}.
 	 * 
 	 * @param basePath
 	 *            basePath is calculated from this file
@@ -75,60 +69,47 @@ public final class ResourceUtils {
 	 *            targetPath is calculated to this file
 	 * @return <code>targetPath</code> relativized to <code>basePath</code>
 	 */
-	public static String getRelativePath(final String basePath,
-			final String targetPath) {
+	public static String getRelativePath(final String basePath, final String targetPath) {
 		return getRelativePath(basePath, targetPath, File.separator);
 	}
 
 	/**
-	 * Get the relative path from one file to another, specifying the directory
-	 * separator. If one of the provided resources does not exist, it is assumed
-	 * to be a file unless it ends with '/' or '\'.
+	 * Get the relative path from one file to another, specifying the directory separator. If one of the provided
+	 * resources does not exist, it is assumed to be a file unless it ends with '/' or '\'.
 	 * 
 	 * @param targetPath
 	 *            targetPath is calculated to this file
 	 * @param basePath
 	 *            basePath is calculated from this file
 	 * @param pathSeparator
-	 *            directory separator. The platform default is not assumed so
-	 *            that we can test Unix behavior when running on Windows (for
-	 *            example)
+	 *            directory separator. The platform default is not assumed so that we can test Unix behavior when
+	 *            running on Windows (for example)
 	 * @return <code>targetPath</code> relativized to <code>basePath</code>
 	 * 
-	 * @author 
-	 *         http://stackoverflow.com/questions/204784/how-to-construct-a-relative
+	 * @author http://stackoverflow.com/questions/204784/how-to-construct-a-relative
 	 *         -path-in-java-from-two-absolute-paths-or-urls
 	 */
-	public static String getRelativePath(final String basePath,
-			final String targetPath, final String pathSeparator) {
+	public static String getRelativePath(final String basePath, final String targetPath, final String pathSeparator) {
 
 		// Normalize the paths
-		String normalizedTargetPath = FilenameUtils
-				.normalizeNoEndSeparator(targetPath);
-		String normalizedBasePath = FilenameUtils
-				.normalizeNoEndSeparator(basePath);
+		String normalizedTargetPath = FilenameUtils.normalizeNoEndSeparator(targetPath);
+		String normalizedBasePath = FilenameUtils.normalizeNoEndSeparator(basePath);
 
 		// Undo the changes to the separators made by normalization
 		if (pathSeparator.equals("/")) {
-			normalizedTargetPath = FilenameUtils
-					.separatorsToUnix(normalizedTargetPath);
-			normalizedBasePath = FilenameUtils
-					.separatorsToUnix(normalizedBasePath);
+			normalizedTargetPath = FilenameUtils.separatorsToUnix(normalizedTargetPath);
+			normalizedBasePath = FilenameUtils.separatorsToUnix(normalizedBasePath);
 
 		} else if (pathSeparator.equals("\\")) {
-			normalizedTargetPath = FilenameUtils
-					.separatorsToWindows(normalizedTargetPath);
-			normalizedBasePath = FilenameUtils
-					.separatorsToWindows(normalizedBasePath);
+			normalizedTargetPath = FilenameUtils.separatorsToWindows(normalizedTargetPath);
+			normalizedBasePath = FilenameUtils.separatorsToWindows(normalizedBasePath);
 
 		} else {
-			throw new IllegalArgumentException("Unrecognised dir separator '"
-					+ pathSeparator + "'");
+			throw new IllegalArgumentException("Unrecognised dir separator '" + pathSeparator + "'");
 		}
 
 		String[] base = normalizedBasePath.split(Pattern.quote(pathSeparator));
-		String[] target = normalizedTargetPath.split(Pattern
-				.quote(pathSeparator));
+		String[] target = normalizedTargetPath.split(Pattern.quote(pathSeparator));
 
 		// First get all the common elements. Store them as a string,
 		// and also count how many of them there are.
@@ -145,9 +126,8 @@ public final class ResourceUtils {
 			// No single common path element. This most
 			// likely indicates differing drive letters, like C: and D:.
 			// These paths cannot be relativized.
-			throw new PathResolutionException(
-					"No common path element found for '" + normalizedTargetPath
-							+ "' and '" + normalizedBasePath + "'");
+			throw new PathResolutionException("No common path element found for '" + normalizedTargetPath + "' and '"
+					+ normalizedBasePath + "'");
 		}
 
 		// The number of directories we have to backtrack depends on whether the
@@ -194,13 +174,12 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Checks if a {@link String} would be a valid filename. Basing on the
-	 * invalid characters in {@link #ILLEGAL_FILE_NAME_CHARS}.
+	 * Checks if a {@link String} would be a valid filename. Basing on the invalid characters in
+	 * {@link #ILLEGAL_FILE_NAME_CHARS}.
 	 * 
 	 * @param potentialFileName
 	 *            the string to validate.
-	 * @return <code>true</code>, if the {@link String} would be a valid file
-	 *         name, otherwise <code>false</code>.
+	 * @return <code>true</code>, if the {@link String} would be a valid file name, otherwise <code>false</code>.
 	 */
 	public static boolean isLegalFilename(final String potentialFileName) {
 		for (char c : ILLEGAL_FILE_NAME_CHARS) {
@@ -212,8 +191,7 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Replaces all illegal characters ({@link #ILLEGAL_FILE_NAME_CHARS}) by
-	 * {@link #DEFAULT_REPLACEMENT_CHAR}.
+	 * Replaces all illegal characters ({@link #ILLEGAL_FILE_NAME_CHARS}) by {@link #DEFAULT_REPLACEMENT_CHAR}.
 	 * 
 	 * @param potentialFileName
 	 *            the file to be "legalized"
@@ -224,16 +202,14 @@ public final class ResourceUtils {
 		for (char c : ILLEGAL_FILE_NAME_CHARS) {
 			int illegalIndex = potentialFileName.indexOf(c);
 			if (illegalIndex > -1) {
-				legalFileName = potentialFileName.replace(c,
-						DEFAULT_REPLACEMENT_CHAR);
+				legalFileName = potentialFileName.replace(c, DEFAULT_REPLACEMENT_CHAR);
 			}
 		}
 		return legalFileName;
 	}
 
 	/**
-	 * Exception thrown by
-	 * {@link ResourceUtilsTest#getRelativePath(String, String, String)}.
+	 * Exception thrown by {@link ResourceUtilsTest#getRelativePath(String, String, String)}.
 	 * 
 	 * 
 	 * @author schnatterer
@@ -244,8 +220,7 @@ public final class ResourceUtils {
 		private static final long serialVersionUID = 1121663230711844799L;
 
 		/**
-		 * Creates a {@link PathResolutionException} containing a specific
-		 * message.
+		 * Creates a {@link PathResolutionException} containing a specific message.
 		 * 
 		 * @param msg
 		 *            the message to be transported by the exception
