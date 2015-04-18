@@ -17,9 +17,9 @@
 */
 
 /**
- * Contains classes related to the actual database (low level).
+ * Contains utility classes for the domain classes (entities).
  * @author schnatterer
  *
  */
-package info.schnatterer.songbirdDbTools.backend.connection;
+package info.schnatterer.songbirddbapi4j.domain.util;
 
