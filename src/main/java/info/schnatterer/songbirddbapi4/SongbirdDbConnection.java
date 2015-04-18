@@ -29,19 +29,26 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
 /**
- * Abstracts from the Songbird database database file. This is a static class used by the database services abstracting
- * from the tables. Make sure to call {@link #setDbFile(String)} before using it and {@link #close()} after using it.
+ * Abstracts from the Songbird database database file. Make sure to call {@link #setDbFile(String)} before using it and
+ * {@link #close()} after using it.
+ * 
+ * <b>This class is not thread safe.</b> Use a new instance in each thread.
  * 
  * @author schnatterer
  * 
  */
 public final class SongbirdDbConnection {
-	/** Don't instantiate utility classes! */
-	private SongbirdDbConnection() {
+
+	/**
+	 * @param pathToDb
+	 *            the dbUrl to set
+	 */
+	public SongbirdDbConnection(final String pathToDb) {
+		this.dbUrl = JDBC_PREFIX + pathToDb;
 	}
 
 	/** SLF4J-Logger. */
-	private static Logger logger = LoggerFactory.getLogger(SongbirdDbConnection.class);
+	private final Logger logger = LoggerFactory.getLogger(SongbirdDbConnection.class);
 
 	/** The jdbc prefix used for connecting. */
 	private static final String JDBC_PREFIX = "jdbc:sqlite:";
@@ -53,13 +60,13 @@ public final class SongbirdDbConnection {
 	private static final int STATEMENT_TIMEOUT = 30;
 
 	/** Actual database URL to connect to. */
-	private static String dbUrl = null;
+	private String dbUrl = null;
 
 	/** Connection to the database. */
-	private static Connection connection = null;
+	private Connection connection = null;
 
 	/** Closes the database connection. */
-	public static void close() {
+	public void close() {
 		try {
 			close(connection);
 		} finally {
@@ -68,7 +75,7 @@ public final class SongbirdDbConnection {
 	}
 
 	/** Closes the database connection. */
-	public static void close(Connection actualConnection) {
+	private void close(Connection actualConnection) {
 		try {
 			if (actualConnection != null) {
 				logger.debug("Closing connection to " + dbUrl);
@@ -81,13 +88,13 @@ public final class SongbirdDbConnection {
 	}
 
 	/**
-	 * Returns a connection to the songbird database set up by {@link #setDbFile(String)}.
+	 * Returns a connection to the songbird database.
 	 * 
 	 * @return a connection ready for queries to the songbird database
 	 * @throws SQLException
 	 *             in case of any problems (e.g. SQLite-related or missing database URL)
 	 */
-	private static Connection getConnection() throws SQLException {
+	private Connection getConnection() throws SQLException {
 		if (connection == null) {
 			/* See: http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC */
 
@@ -121,15 +128,6 @@ public final class SongbirdDbConnection {
 		return connection;
 	}
 
-	// private static void createCollations(JdbcConnection c) {
-	// c.createCollationSequence(new org.sqlite.text.Collator(""));
-	//
-	// }
-	//
-	// private class ConcreteCollator extends org.sqlite.text.Collator {
-	//
-	// }
-
 	/**
 	 * Create a statement using the {@link #connection}.
 	 * 
@@ -137,16 +135,12 @@ public final class SongbirdDbConnection {
 	 * @throws SQLException
 	 *             if a database access error occurs or this method is called on a closed connection
 	 */
-	private static Statement getStatment() throws SQLException {
+	private Statement getStatment() throws SQLException {
 		Connection actualConnection = getConnection();
 		Statement statement;
-		try {
-			statement = actualConnection.createStatement();
-			statement.setQueryTimeout(STATEMENT_TIMEOUT);
-			return statement;
-		} finally {
-			close(actualConnection);
-		}
+		statement = actualConnection.createStatement();
+		statement.setQueryTimeout(STATEMENT_TIMEOUT);
+		return statement;
 	}
 
 	/**
@@ -161,7 +155,7 @@ public final class SongbirdDbConnection {
 	 *             statement produces anything other than a single ResultSet object, the method is called on a
 	 *             PreparedStatement or CallableStatement
 	 */
-	public static ResultSet executeQuery(final String query) throws SQLException {
+	public ResultSet executeQuery(final String query) throws SQLException {
 		// logger.debug("Query to SQLite: " + query);
 		return getStatment().executeQuery(query);
 	}
@@ -177,27 +171,14 @@ public final class SongbirdDbConnection {
 	 * @throws SQLException
 	 *             if a database access error occurs or this method is called on a closed connection
 	 */
-	public static PreparedStatement preparedStatement(final String query) throws SQLException {
+	public PreparedStatement preparedStatement(final String query) throws SQLException {
 		return getConnection().prepareStatement(query);
 	}
 
 	/**
 	 * @return the dbUrl
 	 */
-	public static String getDbUrl() {
+	public String getDbUrl() {
 		return dbUrl;
-	}
-
-	/**
-	 * Sets the path to the SQLite database. Causes the actual connection to be closed (if any).
-	 * 
-	 * @param pathToDb
-	 *            the dbUrl to set
-	 */
-	public static void setDbFile(final String pathToDb) {
-		if (connection != null) {
-			close(connection);
-		}
-		SongbirdDbConnection.dbUrl = JDBC_PREFIX + pathToDb;
 	}
 }

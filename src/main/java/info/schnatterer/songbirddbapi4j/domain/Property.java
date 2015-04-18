@@ -1,29 +1,29 @@
 /**
-* Copyright (C) 2013 Johannes Schnatterer
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2013 Johannes Schnatterer
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package info.schnatterer.songbirddbapi4j.domain;
+
+import info.schnatterer.songbirddbapi4.SongbirdDbConnection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
-import info.schnatterer.songbirddbapi4.SongbirdDbConnection;
 
 /**
  * The property types of a {@link MemberMediaItem}.
@@ -186,15 +186,6 @@ public final class Property {
 	 * </pre>
 	 */
 
-	static {
-		property2IdMap = new HashMap<String, Integer>();
-		id2PropertyMap = new HashMap<Integer, String>();
-		try {
-			populateResourceMap();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
 	/** Mapping from numerical IDs to string constants (database enums). */
 	private static Map<Integer, String> id2PropertyMap;
 	/** Mapping from string constants (database enums) to numerical IDs. */
@@ -204,11 +195,15 @@ public final class Property {
 	 * Initializes the mappings from string constants (database enums) to numerical IDs and the other way round from the
 	 * database.
 	 * 
+	 * To avoid doing this again and again, use {@link #isInitialized()}.
+	 * 
 	 * @throws SQLException
 	 *             in case an error occurs during the db query.
 	 */
-	private static void populateResourceMap() throws SQLException {
-		ResultSet rs = SongbirdDbConnection.executeQuery(QUERY_PROPERTIES);
+	public static void populateResourceMap(SongbirdDbConnection connection) throws SQLException {
+		property2IdMap = new HashMap<String, Integer>();
+		id2PropertyMap = new HashMap<Integer, String>();
+		ResultSet rs = connection.executeQuery(QUERY_PROPERTIES);
 		while (rs.next()) {
 			// read the result set
 			Integer id = rs.getInt(1);
@@ -234,5 +229,19 @@ public final class Property {
 	 */
 	public static int property2Id(final String property) {
 		return property2IdMap.get(property);
+	}
+
+	/**
+	 * Checks if maps have been initialized from database.
+	 * 
+	 * @return
+	 */
+	public static boolean isInitialized() {
+		if (property2IdMap == null || property2IdMap.size() == 0 || id2PropertyMap == null
+				|| id2PropertyMap.size() == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

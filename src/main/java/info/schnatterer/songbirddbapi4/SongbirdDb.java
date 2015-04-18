@@ -19,6 +19,7 @@
 package info.schnatterer.songbirddbapi4;
 
 import info.schnatterer.songbirddbapi4j.domain.MediaItem;
+import info.schnatterer.songbirddbapi4j.domain.MediaListTypes;
 import info.schnatterer.songbirddbapi4j.domain.MemberMediaItem;
 import info.schnatterer.songbirddbapi4j.domain.Property;
 import info.schnatterer.songbirddbapi4j.domain.SimpleMediaList;
@@ -83,6 +84,8 @@ public class SongbirdDb {
 			// "order by l.member_media_item_id ";
 			+ "where l.media_item_id =? COLLATE NOCASE " + "order by l.ordinal COLLATE NOCASE";
 
+	private final String pathToDb;
+
 	// @SuppressWarnings("serial")
 	// public static final Set<String> PLAYLISTS_IGNORE = new HashSet<String>()
 	// {
@@ -100,6 +103,31 @@ public class SongbirdDb {
 	// private List<MediaItem> playListItems = new LinkedList<MediaItem>();
 	// private List<SimpleMediaList> playLists = new
 	// LinkedList<SimpleMediaList>();
+
+	/**
+	 * Creates a wrapper for the songbird database at a specific location.
+	 * 
+	 * @param pathToDb
+	 *            the dbUrl to the songbird database file
+	 */
+	public SongbirdDb(String pathToDb) {
+		this.pathToDb = pathToDb;
+
+		// Make sure Property and MediaListType Maps are initialized
+		synchronized (SongbirdDb.class) {
+			if (!MediaListTypes.isInitialized() || !Property.isInitialized()) {
+				SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
+				try {
+					MediaListTypes.populatelistTypeMap(connection);
+					Property.populateResourceMap(connection);
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				} finally {
+					connection.close();
+				}
+			}
+		}
+	}
 
 	/**
 	 * Gets only the {@link MediaItem}s that are playlists. Does not get the {@link MediaItem}s which are members of the
@@ -132,70 +160,75 @@ public class SongbirdDb {
 		 */
 		List<MediaItem> playListItems = new LinkedList<MediaItem>();
 
-		ResultSet rs = SongbirdDbConnection.executeQuery(QUERY_MEDIA_LISTS_TYPE_SIMPLE);
-		// .executeQuery(QUERY_MEDIA_LISTS_DISTINCT);
+		SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
+		try {
+			ResultSet rs = connection.executeQuery(QUERY_MEDIA_LISTS_TYPE_SIMPLE);
+			// .executeQuery(QUERY_MEDIA_LISTS_DISTINCT);
 
-		if (rs.next()) { // If there are results at all
-			int currentId = rs.getInt("media_item_id");
-			while (currentId >= 0) {
-				MediaItem m = new MediaItem();
-				m.setId(currentId);
-				m.setListType(rs.getInt("media_list_type_id"));
-				m.setContentUrl(rs.getString("content_url"));
-				currentId = getProperties(m, rs, "media_item_id");
+			if (rs.next()) { // If there are results at all
+				int currentId = rs.getInt("media_item_id");
+				while (currentId >= 0) {
+					MediaItem m = new MediaItem();
+					m.setId(currentId);
+					m.setListType(rs.getInt("media_list_type_id"));
+					m.setContentUrl(rs.getString("content_url"));
+					currentId = getProperties(m, rs, "media_item_id");
 
-				String mediaListName = m.getProperty(Property.PROP_MEDIA_LIST_NAME);
+					String mediaListName = m.getProperty(Property.PROP_MEDIA_LIST_NAME);
 
-				// Skip all playlist without name
-				if (mediaListName == null) {
-					continue;
-				}
-
-				if (ignoreInternalPlaylists) {
-					String mediaListType = m.getProperty(Property.PROP_CUSTOM_TYPE);
-					// if (mediaListName != null && mediaListName.startsWith("&")) {
-					/*
-					 * Note: Dynamic and internal playlists start with '&'. However, a dynamic playlist's customType is
-					 * "simple", as with it is for "normal" playlists. Internal playlists have a type like "download" or
-					 * "smart". So in order to ignore internal playlists it would be possible to filter for the custom
-					 * type.
-					 * 
-					 * In addition, most internal playlists don't have a name. But not all!
-					 * 
-					 * It also seems that only internal lists have a mediaListType of "dynamic". But not all!
-					 * 
-					 * So skip any playlists with customType != "simple"
-					 */
-					if (mediaListType != null && !mediaListType.equals("simple")) {
-						// && mediaListName == null && m.getListType().equals("dynamic")) {
-						// Skip this one
+					// Skip all playlist without name
+					if (mediaListName == null) {
 						continue;
 					}
-				}
 
-				if (skipDynamicLists) {
-					/* Note: Dynamic lists begin with "&smart". */
-					if (mediaListName.startsWith("&smart")) {
-						// Skip this one
-						continue;
+					if (ignoreInternalPlaylists) {
+						String mediaListType = m.getProperty(Property.PROP_CUSTOM_TYPE);
+						// if (mediaListName != null && mediaListName.startsWith("&")) {
+						/*
+						 * Note: Dynamic and internal playlists start with '&'. However, a dynamic playlist's customType
+						 * is "simple", as with it is for "normal" playlists. Internal playlists have a type like
+						 * "download" or "smart". So in order to ignore internal playlists it would be possible to
+						 * filter for the custom type.
+						 * 
+						 * In addition, most internal playlists don't have a name. But not all!
+						 * 
+						 * It also seems that only internal lists have a mediaListType of "dynamic". But not all!
+						 * 
+						 * So skip any playlists with customType != "simple"
+						 */
+						if (mediaListType != null && !mediaListType.equals("simple")) {
+							// && mediaListName == null && m.getListType().equals("dynamic")) {
+							// Skip this one
+							continue;
+						}
 					}
+
+					if (skipDynamicLists) {
+						/* Note: Dynamic lists begin with "&smart". */
+						if (mediaListName.startsWith("&smart")) {
+							// Skip this one
+							continue;
+						}
+					}
+
+					// /* Discard playlist that don't have a name property */
+					// if (m.getProperty(Property.PROP_MEDIA_LIST_NAME) == null) {
+					// logger.warn("Found playlist with no name. Skipping list. " + m);
+					// } else if (skipDynamicLists && m.getListType().equals("dynamic")) {
+					// logger.info("Skipping dynamic list " + m.getProperty(Property.PROP_MEDIA_LIST_NAME));
+					// } else {
+					playListItems.add(m);
+					// }
+
+					// logger.debug("ID: " + m.getId() + ": \""
+					// + m.getProperty(Property.PROP_MEDIA_LIST_NAME)
+					// + "\"; Type: " + m.getListType());
 				}
-
-				// /* Discard playlist that don't have a name property */
-				// if (m.getProperty(Property.PROP_MEDIA_LIST_NAME) == null) {
-				// logger.warn("Found playlist with no name. Skipping list. " + m);
-				// } else if (skipDynamicLists && m.getListType().equals("dynamic")) {
-				// logger.info("Skipping dynamic list " + m.getProperty(Property.PROP_MEDIA_LIST_NAME));
-				// } else {
-				playListItems.add(m);
-				// }
-
-				// logger.debug("ID: " + m.getId() + ": \""
-				// + m.getProperty(Property.PROP_MEDIA_LIST_NAME)
-				// + "\"; Type: " + m.getListType());
 			}
+			return playListItems;
+		} finally {
+			connection.close();
 		}
-		return playListItems;
 	}
 
 	/**
@@ -220,81 +253,86 @@ public class SongbirdDb {
 		List<MediaItem> playListItems = getPlaylistItems(ignoreInternalPlaylists, skipDynamicLists);
 
 		List<SimpleMediaList> playLists = new LinkedList<SimpleMediaList>();
+		SongbirdDbConnection connection = new SongbirdDbConnection(pathToDb);
+		try {
+			PreparedStatement queryMediaList = connection.preparedStatement(QUERY_MEDIA_LIST);
+			for (MediaItem playlistMediaItem : playListItems) {
 
-		PreparedStatement queryMediaList = SongbirdDbConnection.preparedStatement(QUERY_MEDIA_LIST);
-		for (MediaItem playlistMediaItem : playListItems) {
+				// This is taken care of by getPlaylistItems() now
+				// if (ignoreInternalPlaylists) {
+				// String mediaListName = playlistMediaItem.getProperty(Property.PROP_MEDIA_LIST_NAME);
+				// String mediaListType = playlistMediaItem.getProperty(Property.PROP_CUSTOM_TYPE);
+				// /*
+				// * Note: Dynamic and internal playlists start with '&'. However, a dynamic playlist's customType is
+				// * "simple", as with it is for "normal" playlists. Internal playlists have a type like "download" or
+				// * "smart". So in order to ignore internal playlists it would be possible to filter for the custom
+				// type.
+				// * In addition, most internal playlists don't have a name.
+				// *
+				// * So skip any playlists without name and customType != "simple".
+				// */
+				// // if (mediaListName != null && mediaListName.startsWith("&")) {
+				// if (mediaListName == null && mediaListType != null && !mediaListType.equals("simple")) {
+				// // Skip this one
+				// continue;
+				// }
+				// }
 
-			// This is taken care of by getPlaylistItems() now
-			// if (ignoreInternalPlaylists) {
-			// String mediaListName = playlistMediaItem.getProperty(Property.PROP_MEDIA_LIST_NAME);
-			// String mediaListType = playlistMediaItem.getProperty(Property.PROP_CUSTOM_TYPE);
-			// /*
-			// * Note: Dynamic and internal playlists start with '&'. However, a dynamic playlist's customType is
-			// * "simple", as with it is for "normal" playlists. Internal playlists have a type like "download" or
-			// * "smart". So in order to ignore internal playlists it would be possible to filter for the custom type.
-			// * In addition, most internal playlists don't have a name.
-			// *
-			// * So skip any playlists without name and customType != "simple".
-			// */
-			// // if (mediaListName != null && mediaListName.startsWith("&")) {
-			// if (mediaListName == null && mediaListType != null && !mediaListType.equals("simple")) {
-			// // Skip this one
-			// continue;
-			// }
-			// }
+				/* Query members of playlist */
+				queryMediaList.setInt(1, playlistMediaItem.getId());
 
-			/* Query members of playlist */
-			queryMediaList.setInt(1, playlistMediaItem.getId());
+				ResultSet rs = queryMediaList.executeQuery();
 
-			ResultSet rs = queryMediaList.executeQuery();
+				SimpleMediaList list = new SimpleMediaList();
+				list.setList(playlistMediaItem);
+				// Map<String, MediaItem> members = new TreeMap<String,
+				// MediaItem>();
 
-			SimpleMediaList list = new SimpleMediaList();
-			list.setList(playlistMediaItem);
-			// Map<String, MediaItem> members = new TreeMap<String,
-			// MediaItem>();
+				List<MemberMediaItem> members = list.getMembers();
 
-			List<MemberMediaItem> members = list.getMembers();
+				if (rs.next()) { // If there are results at all
+					int currentId = rs.getInt("member_media_item_id");
+					while (currentId >= 0) {
 
-			if (rs.next()) { // If there are results at all
-				int currentId = rs.getInt("member_media_item_id");
-				while (currentId >= 0) {
+						MemberMediaItem memberWrapper = new MemberMediaItem();
+						// ordinal looks like "168.225.0.-1.0"
+						memberWrapper.setOridnal(rs.getString("ordinal"));
 
-					MemberMediaItem memberWrapper = new MemberMediaItem();
-					// ordinal looks like "168.225.0.-1.0"
-					memberWrapper.setOridnal(rs.getString("ordinal"));
+						// read the result set
+						MediaItem member = new MediaItem();
+						member.setId(currentId);
+						member.setListType(rs.getInt("media_list_type_id"));
+						member.setContentUrl(rs.getString("content_url"));
+						currentId = getProperties(member, rs, "member_media_item_id");
 
-					// read the result set
-					MediaItem member = new MediaItem();
-					member.setId(currentId);
-					member.setListType(rs.getInt("media_list_type_id"));
-					member.setContentUrl(rs.getString("content_url"));
-					currentId = getProperties(member, rs, "member_media_item_id");
+						memberWrapper.setMember(member);
 
-					memberWrapper.setMember(member);
-
-					// members.put(ordinal, m);
-					members.add(memberWrapper);
+						// members.put(ordinal, m);
+						members.add(memberWrapper);
+					}
 				}
+
+				// list.setMembers(members);
+				list.sortMembers(true);
+
+				playLists.add(list);
+				// } catch (IOException e) {
+				// logger.error("unable to write to file", e);
+				// } finally {
+				// try {
+				// out.close();
+				// } catch (IOException e) {
+				// logger.error("unable to close file", e);
+				// }
+				// }
+				// } catch (FileNotFoundException e) {
+				// logger.error("unable to open file for writing", e);
+				// }
 			}
-
-			// list.setMembers(members);
-			list.sortMembers(true);
-
-			playLists.add(list);
-			// } catch (IOException e) {
-			// logger.error("unable to write to file", e);
-			// } finally {
-			// try {
-			// out.close();
-			// } catch (IOException e) {
-			// logger.error("unable to close file", e);
-			// }
-			// }
-			// } catch (FileNotFoundException e) {
-			// logger.error("unable to open file for writing", e);
-			// }
+			return playLists;
+		} finally {
+			connection.close();
 		}
-		return playLists;
 	}
 
 	/**

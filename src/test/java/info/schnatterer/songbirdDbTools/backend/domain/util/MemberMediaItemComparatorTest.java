@@ -19,8 +19,8 @@
 package info.schnatterer.songbirdDbTools.backend.domain.util;
 
 import static org.junit.Assert.*;
-import info.schnatterer.songbirdDbTools.backend.domain.MemberMediaItem;
-import info.schnatterer.songbirdDbTools.backend.domain.util.MemberMediaItemComparator;
+import info.schnatterer.songbirddbapi4j.domain.MemberMediaItem;
+import info.schnatterer.songbirddbapi4j.domain.util.MemberMediaItemComparator;
 
 import java.util.Arrays;
 import java.util.Collections;

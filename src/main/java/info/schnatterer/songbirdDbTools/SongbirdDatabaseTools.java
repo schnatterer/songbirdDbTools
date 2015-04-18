@@ -18,10 +18,10 @@
 
 package info.schnatterer.songbirdDbTools;
 
-import info.schnatterer.songbirdDbTools.backend.connection.SongbirdDatabaseConnection;
 import info.schnatterer.songbirdDbTools.cli.SongbirdDatabaseToolsCli;
 import info.schnatterer.songbirdDbTools.cli.SongbirdDatabaseToolsCli.ExportPlaylists;
 import info.schnatterer.songbirdDbTools.commands.playlist.ExportPlaylistsCommand;
+import info.schnatterer.songbirddbapi4.SongbirdDb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,14 +82,14 @@ public class SongbirdDatabaseTools {
 
 		if (commandParams != null) {
 			String pathToDb = applicationParams.getSongbirdDB();
-			SongbirdDatabaseConnection.setDbFile(pathToDb);
+			SongbirdDb db = new SongbirdDb(pathToDb);
 
 			/*
 			 * Successfully read command line params, determine which command was called
 			 */
 			if (commandParams instanceof ExportPlaylists) {
 				ExportPlaylists params = (ExportPlaylists) commandParams;
-				ExportPlaylistsCommand.exportPlaylists(params.getDestinationPath(), params.getFormat(),
+				new ExportPlaylistsCommand(db).exportPlaylists(params.getDestinationPath(), params.getFormat(),
 						params.getPlaylists(), params.isRelativePaths(), params.isSkipDynamicPlaylists());
 			}
 			// else if (cliParams instanceof SongbirdDatabaseToolsCli.??) {

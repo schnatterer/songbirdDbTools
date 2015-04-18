@@ -19,12 +19,11 @@
 package info.schnatterer.songbirdDbTools.commands.playlist;
 
 import info.schnatterer.songbirdDbTools.Utils.ResourceUtils;
-import info.schnatterer.songbirdDbTools.backend.connection.SongbirdDatabaseConnection;
-import info.schnatterer.songbirdDbTools.backend.domain.MediaItem;
-import info.schnatterer.songbirdDbTools.backend.domain.MemberMediaItem;
-import info.schnatterer.songbirdDbTools.backend.domain.Property;
-import info.schnatterer.songbirdDbTools.backend.domain.SimpleMediaList;
-import info.schnatterer.songbirdDbTools.backend.service.PlaylistService;
+import info.schnatterer.songbirddbapi4.SongbirdDb;
+import info.schnatterer.songbirddbapi4j.domain.MediaItem;
+import info.schnatterer.songbirddbapi4j.domain.MemberMediaItem;
+import info.schnatterer.songbirddbapi4j.domain.Property;
+import info.schnatterer.songbirddbapi4j.domain.SimpleMediaList;
 
 import java.io.File;
 import java.net.URI;
@@ -46,8 +45,10 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public final class ExportPlaylistsCommand {
-	/** Don't instantiate utility classes! */
-	private ExportPlaylistsCommand() {
+	private final SongbirdDb songbirdDb;
+
+	public ExportPlaylistsCommand(SongbirdDb songbirdDb) {
+		this.songbirdDb = songbirdDb;
 	}
 
 	/** System-dependent End Of Line string. */
@@ -60,24 +61,6 @@ public final class ExportPlaylistsCommand {
 	 * Playlist exporter implementation used by the command to write the actual playlist files.
 	 */
 	private static PlaylistExporter playlistExporter = new PlaylistExporterImplLizzy();
-
-	/**
-	 * Exemplary usage of this class.
-	 * 
-	 * @param args
-	 *            command line arguments
-	 * @throws ClassNotFoundException
-	 */
-	public static void main(final String[] args) {
-		try {
-			logger.info("startup");
-			SongbirdDatabaseConnection.setDbFile(args[0]);
-			ExportPlaylistsCommand.exportPlaylists("etc/", "m3u", null, true, false);
-		} finally {
-			SongbirdDatabaseConnection.close();
-			logger.info("shutdown");
-		}
-	}
 
 	/**
 	 * Exports all songbird playlists in a specific format to a specified destination folder.
@@ -93,7 +76,7 @@ public final class ExportPlaylistsCommand {
 	 * @param skipDynamicLists
 	 *            <code>true</code> skips dynamic playlists
 	 */
-	public static void exportPlaylists(final String destinationFolder, final String playlistFormat,
+	public void exportPlaylists(final String destinationFolder, final String playlistFormat,
 			final List<String> playlistNames, final boolean useRelativePaths, final boolean skipDynamicLists) {
 
 		// Check if playlist can be written to destination folder.
@@ -113,7 +96,7 @@ public final class ExportPlaylistsCommand {
 		Set<String> exportedLists = new HashSet<String>();
 
 		try {
-			List<SimpleMediaList> playlists = new PlaylistService().getPlayLists(true, skipDynamicLists);
+			List<SimpleMediaList> playlists = songbirdDb.getPlayLists(true, skipDynamicLists);
 			for (SimpleMediaList simpleMediaList : playlists) {
 
 				// String playlistName = simpleMediaList.getList().getProperty(
