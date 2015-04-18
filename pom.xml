@@ -11,9 +11,18 @@
 			<id>songbirdPlaylistExporterLocalRepo</id>
 			<url>file://${basedir}/lib</url>
 		</repository>
+		<repository>
+			<id>songbirdDbApi4j-mvn-repo</id>
+			<url>https://raw.github.com/schnatterer/songbirdDbApi4j/mvn-repo/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>info.schnatterer</groupId>
+			<artifactId>songbirdDbApi4j</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
