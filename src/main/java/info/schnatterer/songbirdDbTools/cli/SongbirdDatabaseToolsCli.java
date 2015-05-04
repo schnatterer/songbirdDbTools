@@ -69,7 +69,7 @@ public class SongbirdDatabaseToolsCli extends ComplexCli {
 		private String format = "m3u";
 
 		/** Definition of parameter - playlist names. */
-		@Parameter(names = { "-p", "--playlists" }, variableArity = true,
+		@Parameter(names = { "-p", "--playlists" }, variableArity = true, splitter = NoSplitter.class,
 				description = DESC_PLAYLISTS)
 		private List<String> playlistNames = new LinkedList<>();
 
