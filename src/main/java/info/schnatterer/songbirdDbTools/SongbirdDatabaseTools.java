@@ -18,10 +18,13 @@
 
 package info.schnatterer.songbirdDbTools;
 
+import info.schnatterer.java.util.jar.Jar;
 import info.schnatterer.songbirdDbTools.cli.SongbirdDatabaseToolsCli;
 import info.schnatterer.songbirdDbTools.cli.SongbirdDatabaseToolsCli.ExportPlaylists;
 import info.schnatterer.songbirdDbTools.commands.playlist.ExportPlaylistsCommand;
 import info.schnatterer.songbirddbapi4.SongbirdDb;
+
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,16 +69,20 @@ public class SongbirdDatabaseTools {
 	 * @return <code>false</code> if there was an error relating to parameters (the error message has been logged).
 	 *         <code>true</code> if the requested command was executed.
 	 */
+	static final String PROG_NAME = "songbirdDbTools";
+
 	private boolean evaluateParams(final String[] args) {
-		logger.debug(this.getClass().getSimpleName() + " started...");
+		logger.debug(PROG_NAME + " started...");
 		logger.debug("Reading command line arguments...");
 
 		/* Parse command line arguments/parameter (command line interface) */
 		Object commandParams = null;
 		SongbirdDatabaseToolsCli applicationParams = new SongbirdDatabaseToolsCli();
 
+		printWelcomeMessage();
+
 		try {
-			commandParams = applicationParams.readParams(args, "songbirdDbTools");
+			commandParams = applicationParams.readParams(args, PROG_NAME);
 		} catch (ParameterException e) { // NOSONAR: Exception already logged
 			return false;
 		}
@@ -96,6 +103,23 @@ public class SongbirdDatabaseTools {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Writes a welcome message to the log/console, including a build number, if available.
+	 */
+	private void printWelcomeMessage() {
+		String welcomeMessage = "Welcome to " + PROG_NAME;
+		String buildNumber;
+		try {
+			buildNumber = Jar.getBuildNumberFromManifest();
+			if (buildNumber != null) {
+				welcomeMessage = welcomeMessage + " (" + buildNumber + ")";
+			}
+		} catch (IOException e) {
+			// If something fails we just don't print the build number
+		}
+		logger.info(welcomeMessage);
 	}
 
 	/**
