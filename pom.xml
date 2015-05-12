@@ -6,6 +6,28 @@
 	<version>0.1.1</version>
 	<name>Songbird Database Tools</name>
 	<description>A collection of tools to access a songbird database file</description>
+	<url>https://github.com/schnatterer/songbird2itunes</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:ssh://github.com/schnatterer/songbirdDbTools.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/schnatterer/songbirdDbTools.git</developerConnection>
+		<url>http://schnatterer.github.io/songbirdDbTools/</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<slf4j.version>1.7.12</slf4j.version>
+	</properties>
+	
 	<repositories>
 		<repository>
 			<id>songbirdPlaylistExporterLocalRepo</id>
@@ -26,12 +48,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.2</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.2</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
