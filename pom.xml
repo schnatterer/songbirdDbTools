@@ -15,11 +15,12 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>info.schnatterer</groupId>
 	<artifactId>songbirdDbTools</artifactId>
-	<version>0.2</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>Songbird Database Tools</name>
 	<description>A collection of tools to access a songbird database file</description>
 	<url>https://github.com/schnatterer/songbird2itunes</url>
@@ -35,7 +36,7 @@
 		<connection>scm:git:ssh://github.com/schnatterer/songbirdDbTools.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/schnatterer/songbirdDbTools.git</developerConnection>
 		<url>http://schnatterer.github.io/songbirdDbTools/</url>
-		<tag>v.0.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<properties>
