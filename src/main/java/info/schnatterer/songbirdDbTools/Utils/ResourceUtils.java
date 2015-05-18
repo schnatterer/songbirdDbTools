@@ -206,7 +206,7 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Exception thrown by {@link ResourceUtilsTest#getRelativePath(String, String, String)}.
+	 * Exception thrown by {@link ResourceUtils#getRelativePath(String, String, String)}.
 	 * 
 	 * 
 	 * @author schnatterer
