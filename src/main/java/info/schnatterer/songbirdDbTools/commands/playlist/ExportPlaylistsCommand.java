@@ -15,6 +15,7 @@
  */
 package info.schnatterer.songbirdDbTools.commands.playlist;
 
+import info.schnatterer.java.util.Sets;
 import info.schnatterer.songbirdDbTools.Utils.ResourceUtils;
 import info.schnatterer.songbirddbapi4.SongbirdDb;
 import info.schnatterer.songbirddbapi4j.domain.MediaItem;
@@ -26,10 +27,11 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.FileSystemException;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -66,7 +68,7 @@ public final class ExportPlaylistsCommand {
 	 *            the folder to write the playlist to
 	 * @param playlistFormat
 	 *            desired format for the playlist (e.g. "m3u" or "pls") if
-	 * @param playlistNames
+	 * @param requestedPlaylistNames
 	 *            the names of the playlists to be exported. If <code>null</code> or empty, all playlists are exported.
 	 * @param useRelativePaths
 	 *            <code>true</code> tries to create relative paths from the playlist members to the playlist file
@@ -74,7 +76,7 @@ public final class ExportPlaylistsCommand {
 	 *            <code>true</code> skips dynamic playlists
 	 */
 	public void exportPlaylists(final String destinationFolder, final String playlistFormat,
-			final List<String> playlistNames, final boolean useRelativePaths, final boolean skipDynamicLists) {
+			final List<String> requestedPlaylistNames, final boolean useRelativePaths, final boolean skipDynamicLists) {
 
 		// Check if playlist can be written to destination folder.
 		try {
@@ -84,17 +86,77 @@ public final class ExportPlaylistsCommand {
 			return;
 		}
 
-		Set<String> playlistNamesSet = null;
-		if (playlistNames != null && !playlistNames.isEmpty()) {
-			playlistNamesSet = new HashSet<String>();
-			playlistNamesSet.addAll(playlistNames);
-		}
-
-		Set<String> exportedLists = new HashSet<String>();
-
 		try {
-			List<SimpleMediaList> playlists = songbirdDb.getPlayLists(true, skipDynamicLists);
-			for (SimpleMediaList simpleMediaList : playlists) {
+			// Find playlists in songbird
+			List<SimpleMediaList> playlistsToMigrate =
+					songbirdDb
+							.getPlayLists(true, true)
+							.stream()
+							.sorted((p1, p2) -> p1.getList().getProperty(Property.PROP_MEDIA_LIST_NAME)
+									.compareTo(p2.getList().getProperty(Property.PROP_MEDIA_LIST_NAME)))
+							.collect(Collectors.toList());
+			logger.info(playlistsToMigrate.size() + " playlist(s) were found in songbird: "
+					+ extractPlaylistNames(playlistsToMigrate));
+
+			// Filter playlist as requested by the user
+			if (requestedPlaylistNames != null && !requestedPlaylistNames.isEmpty()) {
+				// Remove duplicates and sort
+				List<String> requestedPlaylistNamesOrdered =
+						requestedPlaylistNames.stream().distinct().sorted().collect(Collectors.toList());
+				logger.info(requestedPlaylistNamesOrdered.size() + " playlist(s) were requested by the user: "
+						+ toStringQuoted(requestedPlaylistNamesOrdered));
+
+				Set<String> requestedPlaylistNamesSetUpper =
+						requestedPlaylistNamesOrdered.stream().map(playlistName -> playlistName.trim().toUpperCase())
+								.collect(Collectors.toSet());
+				Set<String> songbirdPlaylistNamesSetUpper =
+						playlistsToMigrate
+								.stream()
+								.map(playlist -> playlist.getList().getProperty(Property.PROP_MEDIA_LIST_NAME).trim()
+										.toUpperCase()).collect(Collectors.toSet());
+
+				// find playlists that are only in songbird but not requeted
+				List<String> ignoredPlaylists =
+						Sets.relativeComplement(
+								playlistsToMigrate,
+								requestedPlaylistNamesSetUpper,
+								playlist -> playlist.getList().getProperty(Property.PROP_MEDIA_LIST_NAME).trim()
+										.toUpperCase())
+								.map(playlist -> playlist.getList().getProperty(Property.PROP_MEDIA_LIST_NAME))
+								.distinct().sorted().collect(Collectors.toList());
+				if (!ignoredPlaylists.isEmpty()) {
+					logger.info(ignoredPlaylists.size()
+							+ " playlists are not migrated because they were not requested by the user: "
+							+ toStringQuoted(ignoredPlaylists));
+				}
+
+				// find playlists thate are only requested but not in songbird
+				List<String> requestedPlaylistsNotFound =
+						Sets.relativeComplement(requestedPlaylistNamesOrdered, songbirdPlaylistNamesSetUpper,
+								playlistName -> playlistName.trim().toUpperCase()).distinct().sorted()
+								.collect(Collectors.toList());
+				if (!requestedPlaylistsNotFound.isEmpty()) {
+					// This must be a warning
+					logger.warn(requestedPlaylistsNotFound.size()
+							+ " playlist(s) were requested by the user but not found in songbird: "
+							+ toStringQuoted(requestedPlaylistsNotFound));
+				}
+
+				// Limit to playlists that are both: in songbird and requested
+				playlistsToMigrate =
+						Sets.intersection(
+								playlistsToMigrate,
+								requestedPlaylistNamesSetUpper,
+								playlist -> playlist.getList().getProperty(Property.PROP_MEDIA_LIST_NAME).trim()
+										.toUpperCase()).distinct().collect(Collectors.toList());
+
+				logger.info(playlistsToMigrate.size()
+						+ " playlist(s) from the list were found in songbird and will be migrated: "
+						+ extractPlaylistNames(playlistsToMigrate));
+			}
+
+			// Migrate filtered playlists
+			for (SimpleMediaList simpleMediaList : playlistsToMigrate) {
 
 				// String playlistName = simpleMediaList.getList().getProperty(
 				// Property.PROP_MEDIA_LIST_NAME);
@@ -120,12 +182,7 @@ public final class ExportPlaylistsCommand {
 				if (playlistName.startsWith("&smart.defaultlist.")) {
 					playlistName = playlistName.substring("&smart.defaultlist.".length());
 				}
-				if (playlistNamesSet != null && !playlistNamesSet.contains(playlistName)) {
-					// Don't export playlist
-					logger.debug("Skipping playlist \"" + playlistName + "\"");
-					continue;
-				}
-				exportedLists.add(playlistName);
+
 				try {
 					List<String> omittedFiles =
 							playlistExporter.export(playlistNameToFileName(playlistName),
@@ -155,13 +212,6 @@ public final class ExportPlaylistsCommand {
 				// logger.error("Unable to open playlist file for writing",
 				// e);
 				// }
-			}
-			if (playlistNamesSet != null && !playlistNamesSet.isEmpty()) {
-				playlistNamesSet.removeAll(exportedLists);
-				if (!playlistNamesSet.isEmpty()) {
-					logger.warn("The following playlist were not found in songbird database: "
-							+ playlistNamesSet.toString());
-				}
 			}
 		} catch (SQLException e) {
 			/*
@@ -240,5 +290,30 @@ public final class ExportPlaylistsCommand {
 			}
 		}
 		return memberFiles;
+	}
+
+	/**
+	 * Returns only the names of a list of {@link SimpleMediaList}s.
+	 * 
+	 * @param playLists
+	 *            the list of playlist objects
+	 * @return the names of the playlist objects
+	 */
+	private String extractPlaylistNames(List<SimpleMediaList> playLists) {
+		return toStringQuoted(playLists.stream()
+				.map(playlist -> playlist.getList().getProperty(Property.PROP_MEDIA_LIST_NAME))
+				.collect(Collectors.toList()));
+	}
+
+	/**
+	 * Convert a list of Strings to a single string, that contains the comma-separated strings wrapped in quotes.
+	 * 
+	 * @param list
+	 *            the list to convert
+	 * 
+	 * @return one concatenated string
+	 */
+	private String toStringQuoted(Collection<String> list) {
+		return list.stream().map(str -> "\"" + str + "\"").collect(Collectors.joining(", "));
 	}
 }
