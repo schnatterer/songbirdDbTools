@@ -163,6 +163,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
 				<configuration>
 					<!-- Use the same name for the jar, folder has version information (assembly) -->
 					<finalName>${project.artifactId}</finalName>
