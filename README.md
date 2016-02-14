@@ -1,4 +1,7 @@
 # songbirdDbTools
+
+[![Build Status](https://jenkins.schnatterer.info/job/songbirdDbTools/badge/icon)](https://jenkins.schnatterer.info/job/songbirdDbTools/)
+
 Command-line interface to [Songbird](http://www.getsongbird.com/)/[Nightingale](http://getnightingale.com/) databases.
 Allows for exporting playlists files from songbird databases.
 
