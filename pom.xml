@@ -53,16 +53,16 @@
 			<url>file://${basedir}/lib</url>
 		</repository>
 		<repository>
-			<id>songbirdDbApi4j-mvn-repo</id>
-			<url>https://raw.github.com/schnatterer/songbirdDbApi4j/mvn-repo/</url>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>info.schnatterer</groupId>
+			<groupId>com.github.schnatterer</groupId>
 			<artifactId>songbirdDbApi4j</artifactId>
-			<version>1.0</version>
+			<version>v.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -108,7 +108,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>${project.artifactId}-${pom.version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
