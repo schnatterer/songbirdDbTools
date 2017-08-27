@@ -1,5 +1,6 @@
 # songbirdDbTools
 
+[![Build Status](https://travis-ci.org/schnatterer/songbirdDbTools.svg?branch=master)](https://travis-ci.org/schnatterer/songbirdDbTools)
 [![License](https://img.shields.io/github/license/schnatterer/songbirdDbTools.svg)](LICENSE)
   
 Command-line interface to [Songbird](http://www.getsongbird.com/)/[Nightingale](http://getnightingale.com/) databases.
