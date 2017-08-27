@@ -1,8 +1,6 @@
 # songbirdDbTools
 
-[![Build Status](https://jenkins.schnatterer.info/job/songbirdDbTools/badge/icon)](https://jenkins.schnatterer.info/job/songbirdDbTools/)
 [![License](https://img.shields.io/github/license/schnatterer/songbirdDbTools.svg)](LICENSE)
-[<img alt="powered by openshift" align="right" src="https://www.openshift.com/images/logos/powered_by_openshift.png"/>](https://www.openshift.com/)
   
 Command-line interface to [Songbird](http://www.getsongbird.com/)/[Nightingale](http://getnightingale.com/) databases.
 Allows for exporting playlists files from songbird databases.
