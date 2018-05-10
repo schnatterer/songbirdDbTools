@@ -2,26 +2,26 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>
-            http://schnatterer.github.com/songbirdDbTools/blog/2013/01/20/proudly-presenting-songbirddbtools-0-dot-1/
+            https://schnatterer.github.com/blog/2013/01/20/proudly-presenting-songbirddbtools-0-dot-1/
         </loc>
         <lastmod>2013-01-22T22:02:34+01:00</lastmod>
     </url>
     <url>
         <loc>
-            http://schnatterer.github.com/songbirdDbTools/blog/2013/02/12/songbirddbtools-0-dot-1-1-released/
+            https://schnatterer.github.com/blog/2013/02/12/songbirddbtools-0-dot-1-1-released/
         </loc>
         <lastmod>2013-02-12T20:32:39+01:00</lastmod>
     </url>
     <url>
-        <loc>http://schnatterer.github.com/songbirdDbTools/blog/archives/</loc>
+        <loc>https://schnatterer.github.com/blog/archives/</loc>
         <lastmod>2013-02-12T20:32:39+01:00</lastmod>
     </url>
     <url>
-        <loc>http://schnatterer.github.com/songbirdDbTools/</loc>
+        <loc>https://schnatterer.github.com/</loc>
         <lastmod>2013-02-12T20:32:39+01:00</lastmod>
     </url>
     <url>
-        <loc>http://schnatterer.github.com/songbirdDbTools/robots.txt</loc>
+        <loc>https://schnatterer.github.com/robots.txt</loc>
         <lastmod>2013-01-20T17:42:35+01:00</lastmod>
     </url>
 </urlset>
